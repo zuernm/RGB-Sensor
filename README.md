@@ -17,4 +17,4 @@
 
     rgb_sensor --> return dominant color (1 for Red, 2 for Green, 3 for Blue, 0 undefined)
     rgb_sensor print --> prints out the values of each color reading
-    rgb_sensor loop --> returns the dominant color every 10 seconds
+    rgb_sensor loop --> returns the dominant color every 1 second
