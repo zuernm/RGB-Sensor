@@ -10,6 +10,9 @@
     
     enable I2C interface under raspi-config
     
+    run: 
+    make clean all
+
 **Running**
 
     rgb_sensor --> return dominant color (1 for Red, 2 for Green, 3 for Blue, 0 undefined)
