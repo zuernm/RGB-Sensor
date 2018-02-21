@@ -24,6 +24,6 @@ private:
     const char* i2c_dev;
     int file;
 
-    void write8(unsigned char reg);
-    unsigned char read8();  
+    void write8(unsigned char reg, unsigned char data);
+    unsigned char read8(unsigned char);  
 };

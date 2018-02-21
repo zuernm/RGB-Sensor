@@ -22,9 +22,8 @@ void Sensor::init()
         perror("Failed to acquire bus access and/or talk to slave.\n");
         /* ERROR HANDLING; you can check errno to see what went wrong */        
     }    
-    // Check if device ID is correct
-    write8(ISL_DEVICE_ID);
-    unsigned char device_id = read8();
+    // Check if device ID is correct    
+    unsigned char device_id = read8(ISL_DEVICE_ID);
     if (!(device_id==ISL_DEVICE_ID_VAL)){
         perror("Device not found");
     }
@@ -32,63 +31,55 @@ void Sensor::init()
 
 void Sensor::setConfig() {
     // Config 1
-    write8(ISL_CONFIG_1);
-    write8(ISL_CFG1_MODE_RGB | ISL_CFG1_375LUX);
+    write8(ISL_CONFIG_1, ISL_CFG1_MODE_RGB | ISL_CFG1_375LUX);
     // Config 2
-    write8(ISL_CONFIG_2);
-    write8(ISL_CFG2_IR_ADJUST_HIGH);
+    write8(ISL_CONFIG_2, ISL_CFG2_IR_ADJUST_HIGH);
     // Config 3
-    write8(ISL_CONFIG_3);
-    write8(ISL_CFG_DEFAULT);    
+    write8(ISL_CONFIG_3, ISL_CFG_DEFAULT);
 }
 
-void Sensor::write8(unsigned char reg) {
-    if (write(file, &reg, 1) != 1) {
+void Sensor::write8(unsigned char reg, unsigned char data) {
+    unsigned char buffer[2] = {};
+    buffer[0] = reg;
+    buffer[1] = data;
+    if (write(file, buffer, 2) != 2) {
         /* ERROR HANDLING: i2c transaction failed */
         perror("Failed to write byte to the i2c bus");
     }    
 }
 
-unsigned char Sensor::read8() {    
-    unsigned char* byteBuffer;
-    if (read(file, byteBuffer, 1) != 1) {
+unsigned char Sensor::read8(unsigned char reg) {    
+    if (write(file, &reg, 1) != 1) {
+        /* ERROR HANDLING: i2c transaction failed */
+        perror("Failed to write byte to the i2c bus");
+    }    
+    unsigned char byteBuffer;
+    if (read(file, &byteBuffer, 1) != 1) {
         /* ERROR HANDLING: i2c transaction failed */
         perror("Failed to read byte from i2c bus");
     } else {
-        return *byteBuffer;
+        return byteBuffer;
     } 
 }
 
-unsigned int Sensor::readGreen() {
-    unsigned char green_low, green_high;
-    unsigned int green;
-    write8(ISL_GREEN_L);
-    green_low = read8();
-    write8(ISL_GREEN_H);
-    green_high = read8();
-    green = (green_high << 8) | green_low;    
-    return green;
-}
-
 unsigned int Sensor::readRed() {
-    unsigned char red_low, red_high;    
-    unsigned int red;
-    write8(ISL_RED_L);
-    red_low = read8();
-    write8(ISL_RED_H);
-    red_high = read8();
-    red = (red_high << 8) | red_low;    
+    unsigned int red_low = read8(ISL_RED_L);
+    unsigned int red_high = read8(ISL_RED_H);
+    unsigned int red = (red_high << 8) | red_low;    
     return red;
 }
 
+unsigned int Sensor::readGreen() {
+    unsigned int green_low = read8(ISL_GREEN_L);
+    unsigned int green_high = read8(ISL_GREEN_H);
+    unsigned int green = (green_high << 8) | green_low;    
+    return green;
+}
+
 unsigned int Sensor::readBlue() {
-    unsigned char blue_low, blue_high;
-    unsigned int blue;
-    write8(ISL_BLUE_L);
-    blue_low = read8();
-    write8(ISL_BLUE_H);
-    blue_high = read8();
-    blue = (blue_high << 8) | blue_low;    
+    unsigned int blue_low = read8(ISL_BLUE_L);
+    unsigned int blue_high = read8(ISL_BLUE_H);
+    unsigned int blue = (blue_high << 8) | blue_low;    
     return blue;
 }
 
@@ -110,8 +101,3 @@ unsigned int Sensor::dominantColor(){
     }
     return mainColor;
 }
-
-
-
-
-

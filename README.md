@@ -11,14 +11,16 @@
     enable I2C interface under raspi-config
     
     run: 
-    make clean all
+        make clean all
 
 **Info**
+    make sure the build-essentials are installed:
+        sudo apt-get install build-essential
 
     the i2c connection can be checked by installing:
     	apt-get install i2c-tools
     and running:
-	i2cdetect -y 1
+	    i2cdetect -y 1
     the device address must be returned (0x44)
 
 **Running**
